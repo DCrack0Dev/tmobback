@@ -46,11 +46,8 @@ app.get('/api/health', (req, res) => {
 // Temporary seed endpoint (remove after use)
 app.get('/api/seed', async (req, res) => {
   try {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    
     // Read and run schema.sql
-    const schemaPath = path.join(__dirname, '../../database/schema.sql');
+    const schemaPath = new URL('../../database/schema.sql', import.meta.url);
     const schema = fs.readFileSync(schemaPath, 'utf8');
     
     // Split schema into individual statements
