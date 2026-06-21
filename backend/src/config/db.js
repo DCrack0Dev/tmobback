@@ -1,13 +1,7 @@
-import sqlite3 from 'sqlite3';
 import mysql from 'mysql2/promise';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 let query, run, db;
 
@@ -39,41 +33,9 @@ if (process.env.DB_HOST) {
   db = pool;
 } else {
   // SQLite mode (local development)
-  const dbPath = join(__dirname, '../../database/technow_mobile.db');
-
-  const sqliteDb = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error opening database:', err.message);
-    } else {
-      console.log('Connected to SQLite database');
-    }
-  });
-
-  query = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-      sqliteDb.all(sql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
-  };
-
-  run = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-      sqliteDb.run(sql, params, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ lastID: this.lastID, changes: this.changes });
-        }
-      });
-    });
-  };
-
-  db = sqliteDb;
+  // We'll handle this in a way that doesn't require sqlite3 at import time
+  // but for now, let's just throw an error if MySQL isn't configured
+  throw new Error('Please configure MySQL database connection (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME)');
 }
 
 export default { query, run, db };
