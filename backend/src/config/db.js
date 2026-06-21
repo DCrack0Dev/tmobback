@@ -15,7 +15,10 @@ if (process.env.DB_HOST) {
     database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: {
+      rejectUnauthorized: false // Required for Railway's public endpoint
+    }
   });
 
   console.log('Connected to MySQL database');
