@@ -81,30 +81,15 @@ export const getProducts = async (req, res) => {
     }
     const countResult = await db.query(countQuery, countParams);
 
+    // TEMP: Return raw data without JSON parsing
     res.json({
-      products: products.map(p => {
-        let images = [];
-        let specifications = {};
-        try {
-          images = p.images ? JSON.parse(p.images) : [];
-        } catch (e) {
-          console.error('Failed to parse images:', p.images);
-          images = [];
-        }
-        try {
-          specifications = p.specifications ? JSON.parse(p.specifications) : {};
-        } catch (e) {
-          console.error('Failed to parse specifications:', p.specifications);
-          specifications = {};
-        }
-        return {
-          ...p,
-          images,
-          specifications,
-          average_rating: parseFloat(p.average_rating) || 0,
-          review_count: parseInt(p.review_count) || 0
-        };
-      }),
+      products: products.map(p => ({
+        ...p,
+        images: [], // Hardcoded empty for now
+        specifications: {}, // Hardcoded empty for now
+        average_rating: parseFloat(p.average_rating) || 0,
+        review_count: parseInt(p.review_count) || 0
+      })),
       total: countResult[0].total,
       page: parseInt(page),
       limit: parseInt(limit)
@@ -137,24 +122,11 @@ export const getProduct = async (req, res) => {
     }
 
     const product = products[0];
-    let images = [];
-    let specifications = {};
-    try {
-      images = product.images ? JSON.parse(product.images) : [];
-    } catch (e) {
-      console.error('Failed to parse images:', product.images);
-      images = [];
-    }
-    try {
-      specifications = product.specifications ? JSON.parse(product.specifications) : {};
-    } catch (e) {
-      console.error('Failed to parse specifications:', product.specifications);
-      specifications = {};
-    }
+    // TEMP: Return raw data without JSON parsing
     res.json({
       ...product,
-      images,
-      specifications,
+      images: [], // Hardcoded empty for now
+      specifications: {}, // Hardcoded empty for now
       average_rating: parseFloat(product.average_rating) || 0,
       review_count: parseInt(product.review_count) || 0
     });
