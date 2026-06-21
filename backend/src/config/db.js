@@ -44,13 +44,13 @@ if (process.env.DATABASE_URL) {
 // Define functions for either case
 query = async (sql, params = []) => {
   console.log('Executing query:', sql, 'with params:', params);
-  const [rows] = await pool.execute(sql, params);
+  const [rows] = await pool.query(sql, params);
   return rows;
 };
 
 run = async (sql, params = []) => {
   console.log('Executing run:', sql, 'with params:', params);
-  const [result] = await pool.execute(sql, params);
+  const [result] = await pool.query(sql, params);
   return { lastID: result.insertId, changes: result.affectedRows };
 };
 
