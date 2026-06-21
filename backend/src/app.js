@@ -40,7 +40,11 @@ app.use('/api/currency', currencyRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ 
+    status: 'ok',
+    db_host: process.env.DB_HOST,
+    db_port: process.env.DB_PORT
+  });
 });
 
 // Temporary seed endpoint (remove after use)
