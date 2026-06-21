@@ -46,9 +46,94 @@ app.get('/api/health', (req, res) => {
 // Temporary seed endpoint (remove after use)
 app.get('/api/seed', async (req, res) => {
   try {
-    // Read and run schema.sql
-    const schemaPath = new URL('../../database/schema.sql', import.meta.url);
-    const schema = fs.readFileSync(schemaPath, 'utf8');
+    // Hardcoded schema to avoid path issues
+    const schema = `CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  role VARCHAR(20) NOT NULL DEFAULT 'customer',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  brand VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  stock INTEGER NOT NULL DEFAULT 0,
+  images TEXT,
+  specifications TEXT,
+  is_featured TINYINT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_brand ON products(brand);
+CREATE INDEX IF NOT EXISTS idx_name ON products(name);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER,
+  guest_email VARCHAR(255),
+  guest_name VARCHAR(255),
+  guest_phone VARCHAR(20),
+  total_amount DECIMAL(10,2) NOT NULL,
+  crypto_amount DECIMAL(10,8) NOT NULL,
+  exchange_rate_used DECIMAL(10,8) NOT NULL,
+  wallet_address VARCHAR(255) NOT NULL,
+  transaction_hash VARCHAR(255),
+  status VARCHAR(50) NOT NULL DEFAULT 'pending_payment',
+  shipping_address TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  order_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
+  quantity INTEGER NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  product_id INTEGER NOT NULL,
+  user_id INTEGER,
+  guest_name VARCHAR(255),
+  rating INTEGER NOT NULL,
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS carts (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  user_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
+  quantity INTEGER NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_product (user_id, product_id)
+);
+
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  admin_user_id INTEGER NOT NULL,
+  action VARCHAR(255) NOT NULL,
+  order_id INTEGER,
+  details TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_user_id) REFERENCES users(id),
+  FOREIGN KEY (order_id) REFERENCES orders(id)
+);`;
     
     // Split schema into individual statements
     const statements = schema.split(';').filter(s => s.trim());
