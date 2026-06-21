@@ -5,9 +5,10 @@ dotenv.config();
 
 let query, run, db;
 
+let pool;
 if (process.env.DATABASE_URL) {
   // Using full connection URL
-  const pool = mysql.createPool({
+  pool = mysql.createPool({
     uri: process.env.DATABASE_URL,
     waitForConnections: true,
     connectionLimit: 10,
@@ -16,9 +17,10 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false // Required for Railway's public endpoint
     }
   });
+  console.log('Connected to MySQL database via URL');
 } else if (process.env.DB_HOST) {
   // MySQL mode (production)
-  const pool = mysql.createPool({
+  pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || 3306),
     user: process.env.DB_USER,
@@ -31,25 +33,25 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false // Required for Railway's public endpoint
     }
   });
-
   console.log('Connected to MySQL database');
-
-  query = async (sql, params = []) => {
-    const [rows] = await pool.execute(sql, params);
-    return rows;
-  };
-
-  run = async (sql, params = []) => {
-    const [result] = await pool.execute(sql, params);
-    return { lastID: result.insertId, changes: result.affectedRows };
-  };
-
-  db = pool;
 } else {
   // SQLite mode (local development)
   // We'll handle this in a way that doesn't require sqlite3 at import time
   // but for now, let's just throw an error if MySQL isn't configured
   throw new Error('Please configure MySQL database connection (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME)');
 }
+
+// Define functions for either case
+query = async (sql, params = []) => {
+  const [rows] = await pool.execute(sql, params);
+  return rows;
+};
+
+run = async (sql, params = []) => {
+  const [result] = await pool.execute(sql, params);
+  return { lastID: result.insertId, changes: result.affectedRows };
+};
+
+db = pool;
 
 export default { query, run, db };
