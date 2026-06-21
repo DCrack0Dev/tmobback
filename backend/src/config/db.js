@@ -5,7 +5,18 @@ dotenv.config();
 
 let query, run, db;
 
-if (process.env.DB_HOST) {
+if (process.env.DATABASE_URL) {
+  // Using full connection URL
+  const pool = mysql.createPool({
+    uri: process.env.DATABASE_URL,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    ssl: {
+      rejectUnauthorized: false // Required for Railway's public endpoint
+    }
+  });
+} else if (process.env.DB_HOST) {
   // MySQL mode (production)
   const pool = mysql.createPool({
     host: process.env.DB_HOST,
