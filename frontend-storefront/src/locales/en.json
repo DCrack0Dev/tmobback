@@ -1,0 +1,99 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "myOrders": "My Orders",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "heroTitle": "Premium Smartphones",
+    "heroSubtitle": "Discover the latest mobile technology",
+    "shopNow": "Shop Now",
+    "featured": "Featured Products",
+    "newArrivals": "New Arrivals"
+  },
+  "products": {
+    "filters": "Filters",
+    "brand": "Brand",
+    "priceRange": "Price Range",
+    "sortBy": "Sort By",
+    "newest": "Newest",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "addReview": "Add Review",
+    "specifications": "Specifications",
+    "reviews": "Reviews"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "guestCheckout": "Guest Checkout",
+    "createAccount": "Create an account for faster checkout next time",
+    "shippingInfo": "Shipping Information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "state": "State/Province",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "password": "Password",
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order"
+  },
+  "orderConfirmation": {
+    "title": "Order Confirmed!",
+    "orderNumber": "Order Number",
+    "totalUsd": "Total (USD)",
+    "totalUsdt": "Total (USDT)",
+    "paymentInstructions": "Payment Instructions",
+    "step1": "Send exactly",
+    "step1b": "USDT via TRC20 network to the address below",
+    "step2": "Copy your transaction hash",
+    "step3": "Paste it below and submit",
+    "walletAddress": "Wallet Address",
+    "transactionHash": "Transaction Hash",
+    "submit": "Submit Transaction"
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "registerTitle": "Create Account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "login": "Login",
+    "register": "Register"
+  },
+  "account": {
+    "title": "My Account",
+    "updateInfo": "Update Information",
+    "save": "Save"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "addToCart": "Add to Cart",
+    "search": "Search products...",
+    "language": "Language",
+    "currency": "Currency"
+  }
+}

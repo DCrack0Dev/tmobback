@@ -1,0 +1,99 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "products": "Produits",
+    "cart": "Panier",
+    "myOrders": "Mes Commandes",
+    "account": "Compte",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "heroTitle": "Smartphones Premium",
+    "heroSubtitle": "Découvrez la dernière technologie mobile",
+    "shopNow": "Acheter Maintenant",
+    "featured": "Produits Phares",
+    "newArrivals": "Nouveautés"
+  },
+  "products": {
+    "filters": "Filtres",
+    "brand": "Marque",
+    "priceRange": "Gamme de Prix",
+    "sortBy": "Trier Par",
+    "newest": "Plus Récent",
+    "priceAsc": "Prix: Croissant",
+    "priceDesc": "Prix: Décroissant",
+    "inStock": "En Stock",
+    "outOfStock": "Rupture de Stock",
+    "addReview": "Ajouter un Avis",
+    "specifications": "Spécifications",
+    "reviews": "Avis"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "continueShopping": "Continuer vos Achats",
+    "subtotal": "Sous-total",
+    "checkout": "Payer",
+    "remove": "Supprimer",
+    "quantity": "Quantité"
+  },
+  "checkout": {
+    "title": "Paiement",
+    "guestCheckout": "Paiement Invité",
+    "createAccount": "Créer un compte pour des paiements plus rapides la prochaine fois",
+    "shippingInfo": "Informations de Livraison",
+    "fullName": "Nom Complet",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "state": "État/Province",
+    "postalCode": "Code Postal",
+    "country": "Pays",
+    "password": "Mot de Passe",
+    "orderSummary": "Résumé de la Commande",
+    "placeOrder": "Passer la Commande"
+  },
+  "orderConfirmation": {
+    "title": "Commande Confirmée!",
+    "orderNumber": "Numéro de Commande",
+    "totalUsd": "Total (USD)",
+    "totalUsdt": "Total (USDT)",
+    "paymentInstructions": "Instructions de Paiement",
+    "step1": "Envoyez exactement",
+    "step1b": "USDT via le réseau TRC20 à l'adresse ci-dessous",
+    "step2": "Copiez votre hash de transaction",
+    "step3": "Collez-le ci-dessous et soumettez",
+    "walletAddress": "Adresse du Wallet",
+    "transactionHash": "Hash de Transaction",
+    "submit": "Soumettre la Transaction"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer un Compte",
+    "noAccount": "Pas de compte?",
+    "hasAccount": "Déjà un compte?",
+    "name": "Nom",
+    "email": "Email",
+    "password": "Mot de Passe",
+    "phone": "Téléphone",
+    "login": "Se Connecter",
+    "register": "S'inscrire"
+  },
+  "account": {
+    "title": "Mon Compte",
+    "updateInfo": "Mettre à jour les Informations",
+    "save": "Enregistrer"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "success": "Succès!",
+    "addToCart": "Ajouter au Panier",
+    "search": "Rechercher des produits...",
+    "language": "Langue",
+    "currency": "Devise"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "products": "Productos",
+    "cart": "Carrito",
+    "myOrders": "Mis Pedidos",
+    "account": "Cuenta",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión"
+  },
+  "home": {
+    "heroTitle": "Smartphones Premium",
+    "heroSubtitle": "Descubre la última tecnología móvil",
+    "shopNow": "Comprar Ahora",
+    "featured": "Productos Destacados",
+    "newArrivals": "Nuevos Lanzamientos"
+  },
+  "products": {
+    "filters": "Filtros",
+    "brand": "Marca",
+    "priceRange": "Rango de Precio",
+    "sortBy": "Ordenar Por",
+    "newest": "Más Reciente",
+    "priceAsc": "Precio: Menor a Mayor",
+    "priceDesc": "Precio: Mayor a Menor",
+    "inStock": "Disponible",
+    "outOfStock": "Agotado",
+    "addReview": "Agregar Reseña",
+    "specifications": "Especificaciones",
+    "reviews": "Reseñas"
+  },
+  "cart": {
+    "title": "Carrito de Compras",
+    "empty": "Tu carrito está vacío",
+    "continueShopping": "Continuar Comprando",
+    "subtotal": "Subtotal",
+    "checkout": "Pagar",
+    "remove": "Eliminar",
+    "quantity": "Cantidad"
+  },
+  "checkout": {
+    "title": "Pago",
+    "guestCheckout": "Pago como Invitado",
+    "createAccount": "Crear una cuenta para pagos más rápidos la próxima vez",
+    "shippingInfo": "Información de Envío",
+    "fullName": "Nombre Completo",
+    "email": "Email",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "state": "Estado/Provincia",
+    "postalCode": "Código Postal",
+    "country": "País",
+    "password": "Contraseña",
+    "orderSummary": "Resumen del Pedido",
+    "placeOrder": "Realizar Pedido"
+  },
+  "orderConfirmation": {
+    "title": "Pedido Confirmado!",
+    "orderNumber": "Número de Pedido",
+    "totalUsd": "Total (USD)",
+    "totalUsdt": "Total (USDT)",
+    "paymentInstructions": "Instrucciones de Pago",
+    "step1": "Envía exactamente",
+    "step1b": "USDT via red TRC20 a la dirección de abajo",
+    "step2": "Copia tu hash de transacción",
+    "step3": "Pégalo abajo y envía",
+    "walletAddress": "Dirección de Wallet",
+    "transactionHash": "Hash de Transacción",
+    "submit": "Enviar Transacción"
+  },
+  "auth": {
+    "loginTitle": "Iniciar Sesión",
+    "registerTitle": "Crear Cuenta",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "name": "Nombre",
+    "email": "Email",
+    "password": "Contraseña",
+    "phone": "Teléfono",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse"
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "updateInfo": "Actualizar Información",
+    "save": "Guardar"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito!",
+    "addToCart": "Agregar al Carrito",
+    "search": "Buscar productos...",
+    "language": "Idioma",
+    "currency": "Moneda"
+  }
+}
