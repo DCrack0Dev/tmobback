@@ -6,7 +6,27 @@ export const getStats = async (req, res) => {
     const totalRevenue = await db.query('SELECT SUM(total_amount) as sum FROM orders WHERE status IN ("paid", "shipped", "delivered")');
     const pendingOrders = await db.query('SELECT COUNT(*) as count FROM orders WHERE status IN ("pending_payment", "payment_submitted")');
     const totalProducts = await db.query('SELECT COUNT(*) as count FROM products');
-    const monthlyOrders = await db.query(`SELECT strftime("%Y-%m", created_at) as month, COUNT(*) as count, SUM(total_amount) as revenue FROM orders WHERE created_at >= datetime("now", "-30 days") GROUP BY strftime("%Y-%m", created_at) ORDER BY month`);
+    
+    // Calculate 30 days ago in JS for compatibility
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const cutoffDate = thirtyDaysAgo.toISOString().split('T')[0] + ' 00:00:00';
+    
+    const recentOrders = await db.query('SELECT created_at, total_amount FROM orders WHERE created_at >= ? ORDER BY created_at', [cutoffDate]);
+    
+    // Process monthly data in JS for compatibility with both SQLite and MySQL
+    const monthlyData = {};
+    recentOrders.forEach(order => {
+      const date = new Date(order.created_at);
+      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!monthlyData[month]) {
+        monthlyData[month] = { month, count: 0, revenue: 0 };
+      }
+      monthlyData[month].count += 1;
+      monthlyData[month].revenue += parseFloat(order.total_amount);
+    });
+
+    const monthlyOrders = Object.values(monthlyData);
 
     res.json({
       total_orders: totalOrders[0].count,

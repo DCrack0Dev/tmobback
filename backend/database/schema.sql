@@ -1,87 +1,87 @@
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL,
-  phone TEXT,
-  role TEXT NOT NULL DEFAULT 'customer' CHECK(role IN ('customer', 'admin')),
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  role VARCHAR(20) NOT NULL DEFAULT 'customer',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS products (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  brand TEXT NOT NULL,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  brand VARCHAR(255) NOT NULL,
   description TEXT,
-  price REAL NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
   stock INTEGER NOT NULL DEFAULT 0,
   images TEXT,
   specifications TEXT,
-  is_featured INTEGER DEFAULT 0 CHECK(is_featured IN (0, 1)),
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  is_featured TINYINT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_brand ON products(brand);
 CREATE INDEX IF NOT EXISTS idx_name ON products(name);
 
 CREATE TABLE IF NOT EXISTS orders (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   user_id INTEGER,
-  guest_email TEXT,
-  guest_name TEXT,
-  guest_phone TEXT,
-  total_amount REAL NOT NULL,
-  crypto_amount REAL NOT NULL,
-  exchange_rate_used REAL NOT NULL,
-  wallet_address TEXT NOT NULL,
-  transaction_hash TEXT,
-  status TEXT NOT NULL DEFAULT 'pending_payment' CHECK(status IN ('pending_payment', 'payment_submitted', 'paid', 'shipped', 'delivered', 'cancelled')),
+  guest_email VARCHAR(255),
+  guest_name VARCHAR(255),
+  guest_phone VARCHAR(20),
+  total_amount DECIMAL(10,2) NOT NULL,
+  crypto_amount DECIMAL(10,8) NOT NULL,
+  exchange_rate_used DECIMAL(10,8) NOT NULL,
+  wallet_address VARCHAR(255) NOT NULL,
+  transaction_hash VARCHAR(255),
+  status VARCHAR(50) NOT NULL DEFAULT 'pending_payment',
   shipping_address TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   order_id INTEGER NOT NULL,
   product_id INTEGER NOT NULL,
   quantity INTEGER NOT NULL,
-  price REAL NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   product_id INTEGER NOT NULL,
   user_id INTEGER,
-  guest_name TEXT,
-  rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+  guest_name VARCHAR(255),
+  rating INTEGER NOT NULL,
   comment TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS carts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   user_id INTEGER NOT NULL,
   product_id INTEGER NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 1,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  UNIQUE(user_id, product_id)
+  UNIQUE KEY unique_user_product (user_id, product_id)
 );
 
 CREATE TABLE IF NOT EXISTS admin_audit_log (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
   admin_user_id INTEGER NOT NULL,
-  action TEXT NOT NULL,
+  action VARCHAR(255) NOT NULL,
   order_id INTEGER,
   details TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (admin_user_id) REFERENCES users(id),
   FOREIGN KEY (order_id) REFERENCES orders(id)
 );

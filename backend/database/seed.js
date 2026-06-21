@@ -1,14 +1,5 @@
 import bcrypt from 'bcrypt';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import sqlite3 from 'sqlite3';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const dbPath = join(__dirname, 'technow_mobile.db');
-
-const db = new sqlite3.Database(dbPath);
+import db from '../src/config/db.js';
 
 // Product image lists
 const iphoneImages = [
@@ -48,7 +39,7 @@ const products = [
   {
     name: 'iPhone 17 Pro Max',
     brand: 'Apple',
-    description: 'Apple\'s most capable iPhone, built around a 6.9-inch ProMotion display, the A19 Pro chip, and a triple 48MP camera system with up to 8x optical-quality zoom. Aerospace-grade titanium frame and Ceramic Shield 2 front glass make it as durable as it is powerful.',
+    description: "Apple's most capable iPhone, built around a 6.9-inch ProMotion display, the A19 Pro chip, and a triple 48MP camera system with up to 8x optical-quality zoom. Aerospace-grade titanium frame and Ceramic Shield 2 front glass make it as durable as it is powerful.",
     price: 1199.00,
     stock: 18,
     is_featured: true,
@@ -92,7 +83,7 @@ const products = [
   {
     name: 'iPhone Air',
     brand: 'Apple',
-    description: 'Apple\'s thinnest iPhone ever at just 5.64mm, built on a titanium-aluminum frame. Pairs a 6.5-inch ProMotion display and A19 Pro chip with a single 48MP Fusion camera for a remarkably light, all-day carry.',
+    description: "Apple's thinnest iPhone ever at just 5.64mm, built on a titanium-aluminum frame. Pairs a 6.5-inch ProMotion display and A19 Pro chip with a single 48MP Fusion camera for a remarkably light, all-day carry.",
     price: 999.00,
     stock: 15,
     is_featured: false,
@@ -114,7 +105,7 @@ const products = [
   {
     name: 'iPhone 17',
     brand: 'Apple',
-    description: 'Apple\'s standard flagship for 2025, now with ProMotion across the whole lineup. 6.3-inch display, A19 chip, dual 48MP rear cameras, and the second-generation Camera Control button.',
+    description: "Apple's standard flagship for 2026, now with ProMotion across the whole lineup. 6.3-inch display, A19 chip, dual 48MP rear cameras, and the second-generation Camera Control button.",
     price: 799.00,
     stock: 30,
     is_featured: true,
@@ -157,7 +148,7 @@ const products = [
   {
     name: 'iPhone 16 Pro Max',
     brand: 'Apple',
-    description: 'Last year\'s top-tier Pro Max, still a top performer with the A18 Pro chip, 6.9-inch ProMotion display, and a versatile triple-camera system with 5x optical zoom.',
+    description: "Last year's top-tier Pro flagship, still a top performer with the A18 Pro chip, 6.9-inch ProMotion display, and a versatile triple-camera system with 5x optical zoom.",
     price: 1049.00,
     stock: 14,
     is_featured: false,
@@ -197,7 +188,7 @@ const products = [
     images: iphoneImages
   },
   {
-    name: 'iPhone 16 Plus',
+    name: 'iPhone 16+',
     brand: 'Apple',
     description: 'A larger 6.7-inch take on the standard iPhone 16, with the A18 chip, dual 48MP cameras, and Apple Intelligence support, ideal for anyone who wants a big screen without going Pro.',
     price: 829.00,
@@ -220,7 +211,7 @@ const products = [
   {
     name: 'iPhone 16',
     brand: 'Apple',
-    description: 'Apple\'s 2024 standard flagship, still excellent value with the A18 chip, a 6.1-inch display, dual 48MP cameras, and a dedicated Camera Control button.',
+    description: "Apple's 2024 standard flagship, still excellent value with the A18 chip, a 6.1-inch display, dual 48MP cameras, and a dedicated Camera Control button.",
     price: 699.00,
     stock: 28,
     is_featured: true,
@@ -262,7 +253,7 @@ const products = [
   {
     name: 'iPhone 15 Pro Max',
     brand: 'Apple',
-    description: 'A still-capable previous-generation Pro flagship with a titanium frame, A17 Pro chip, and a 5x telephoto camera — a strong value pick for anyone not chasing the absolute newest chip.',
+    description: "A still-capable previous-generation Pro flagship with a titanium frame, A17 Pro chip, and a 5x telephoto camera — a strong value pick for anyone not chasing the absolute newest chip.",
     price: 899.00,
     stock: 10,
     is_featured: false,
@@ -283,7 +274,7 @@ const products = [
   {
     name: 'iPhone 15',
     brand: 'Apple',
-    description: 'A dependable mid-cycle flagship with Dynamic Island, a 48MP main camera, and USB-C, offering most of the modern iPhone experience at a friendlier price.',
+    description: 'A dependable mid-cycle flagship with Dynamic Island, a 48MP main camera, and USB-C, offering most of the modern iPhone experience at an accessible price.',
     price: 599.00,
     stock: 17,
     is_featured: false,
@@ -304,7 +295,7 @@ const products = [
   {
     name: 'iPhone SE (3rd generation)',
     brand: 'Apple',
-    description: 'Apple\'s most compact and affordable current iPhone, pairing the classic Home button design with the A15 Bionic chip for fast, reliable everyday performance.',
+    description: "Apple's most compact and affordable current iPhone, pairing the classic Home button design with the A15 Bionic chip for fast, reliable everyday performance.",
     price: 429.00,
     stock: 12,
     is_featured: false,
@@ -327,7 +318,7 @@ const products = [
   {
     name: 'Samsung Galaxy S26 Ultra',
     brand: 'Samsung',
-    description: 'Samsung\'s 2026 flagship powerhouse with a 6.9-inch anti-reflective display, the Snapdragon 8 Elite Gen 5 for Galaxy chip, and a 200MP main camera with an industry-first Privacy Display mode.',
+    description: "Samsung's 2026 flagship powerhouse with a 6.9-inch anti-reflective display, the Snapdragon 8 Elite Gen 5 for Galaxy chip, and a 200MP main camera with an industry-first Privacy Display mode.",
     price: 1299.99,
     stock: 16,
     is_featured: true,
@@ -371,7 +362,7 @@ const products = [
   {
     name: 'Samsung Galaxy S26',
     brand: 'Samsung',
-    description: 'The entry point into Samsung\'s 2026 flagship line, with a larger 6.3-inch display, a bigger 4300mAh battery, and the new Snapdragon 8 Elite Gen 5 for Galaxy chip.',
+    description: "The entry point into Samsung's 2026 flagship lineup, with a larger 6.3-inch display, a bigger 4300mAh battery, and the new Snapdragon 8 Elite Gen 5 for Galaxy chip.",
     price: 799.99,
     stock: 26,
     is_featured: false,
@@ -393,7 +384,7 @@ const products = [
   {
     name: 'Samsung Galaxy S25 Ultra',
     brand: 'Samsung',
-    description: 'Last year\'s Ultra flagship remains a top-tier choice, with a 6.9-inch display, Snapdragon 8 Elite for Galaxy chip, and a versatile 200MP quad-camera system with built-in S Pen support.',
+    description: "Last year's Ultra flagship remains a top-tier choice, with a 6.9-inch display, Snapdragon 8 Elite for Galaxy chip, and a versatile 200MP quad-camera system with built-in S Pen support.",
     price: 1099.00,
     stock: 14,
     is_featured: false,
@@ -437,7 +428,7 @@ const products = [
   {
     name: 'Samsung Galaxy S25',
     brand: 'Samsung',
-    description: 'Samsung\'s compact 2025 flagship, with the Snapdragon 8 Elite for Galaxy chip and Galaxy AI features packed into a comfortable 6.2-inch body.',
+    description: "Samsung's compact 2025 flagship, with the Snapdragon 8 Elite for Galaxy chip and Galaxy AI features packed into a comfortable 6.2-inch body.",
     price: 699.00,
     stock: 24,
     is_featured: true,
@@ -459,7 +450,7 @@ const products = [
   {
     name: 'Samsung Galaxy Z Fold 7',
     brand: 'Samsung',
-    description: 'Samsung\'s thinnest foldable yet, opening to an 8-inch immersive display while remaining pocketable closed, powered by the Snapdragon 8 Elite for Galaxy and a versatile triple-camera system.',
+    description: "Samsung's thinnest foldable yet, opening to an 8-inch immersive display while remaining pocketable closed, powered by the Snapdragon 8 Elite for Galaxy and a versatile triple-camera system.",
     price: 1899.99,
     stock: 8,
     is_featured: false,
@@ -510,7 +501,7 @@ const products = [
       Chip: 'Exynos 1580',
       RAM: '8GB',
       Storage: '256GB',
-      'Rear Camera': '50MP Main + 12MP Ultra Wide + 5MP Macro',
+      'Rear Camera': '50MP Main + 8MP Ultra Wide + 5MP Macro',
       'Front Camera': '12MP',
       Battery: '5000mAh',
       Charging: '45W wired',
@@ -612,7 +603,7 @@ const products = [
   {
     name: 'Huawei Pura 80 Ultra',
     brand: 'Huawei',
-    description: 'Huawei\'s imaging flagship, built around a 1-inch RYYB main sensor and a dual telephoto system, finished in Kunlun Glass 2nd Generation for class-leading drop resistance.',
+    description: "Huawei's imaging flagship, built around a 1-inch RYYB main sensor and a dual telephoto system, finished in Kunlun Glass 2nd Generation for class-leading drop resistance.",
     price: 1450.00,
     stock: 9,
     is_featured: true,
@@ -856,7 +847,7 @@ const products = [
   {
     name: 'Oppo Find X9 Ultra',
     brand: 'Oppo',
-    description: 'Oppo\'s imaging-first flagship, co-developed with Hasselblad and built around dual 200MP sensors for both the main and 3x telephoto cameras, with a 10x periscope lens completing the quad-camera array.',
+    description: "Oppo's imaging-first flagship, co-developed with Hasselblad and built around dual 200MP sensors for both the main and 3x telephoto cameras, with a 10x periscope lens completing the quad-camera array.",
     price: 1499.00,
     stock: 7,
     is_featured: true,
@@ -900,7 +891,7 @@ const products = [
   {
     name: 'Oppo Find X9',
     brand: 'Oppo',
-    description: 'The standard Find X9 brings the series\' signature long battery life and Hasselblad-tuned cameras into a more accessible flagship package, powered by the Dimensity 9500.',
+    description: "The standard Find X9 brings the series' signature long battery life and Hasselblad-tuned cameras into a more accessible flagship package, powered by the Dimensity 9500.",
     price: 899.00,
     stock: 19,
     is_featured: false,
@@ -988,7 +979,7 @@ const products = [
   {
     name: 'Oppo Reno 14 Pro',
     brand: 'Oppo',
-    description: 'The previous-gen Reno Pro remains a strong performer, with a high-resolution 50MP main camera, optical image stabilization, and a 32MP selfie camera for content creators.',
+    description: "The previous-gen Reno Pro remains a strong performer, with a high-resolution 50MP main camera, optical image stabilization, and a 32MP selfie camera for content creators.",
     price: 599.00,
     stock: 23,
     is_featured: false,
@@ -1098,7 +1089,7 @@ const products = [
   {
     name: 'Oppo A3x',
     brand: 'Oppo',
-    description: 'Oppo\'s entry-level offering for budget-conscious buyers, with a large display and basic dual-camera setup covering essential smartphone needs.',
+    description: "Oppo's entry-level offering for budget-conscious buyers, with a large display and basic dual-camera setup covering essential smartphone needs.",
     price: 179.00,
     stock: 35,
     is_featured: false,
@@ -1125,99 +1116,48 @@ const seedDatabase = async () => {
 
     const hashedPassword = await bcrypt.hash('password123', 10);
 
-    // Insert admin
-    await new Promise((resolve, reject) => {
-      db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-        ['Admin User', 'admin@technow.com', hashedPassword, '1234567890', 'admin'],
-        function(err) {
-          if (err) reject(err);
-          else resolve();
-        });
-    });
+    // Insert admin and customers using our db.run
+    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+      ['Admin User', 'admin@technow.com', hashedPassword, '1234567890', 'admin']);
 
-    // Insert customer users
-    await new Promise((resolve, reject) => {
-      db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-        ['John Doe', 'john@example.com', hashedPassword, '9876543210', 'customer'],
-        function(err) {
-          if (err) reject(err);
-          else resolve();
-        });
-    });
+    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+      ['John Doe', 'john@example.com', hashedPassword, '9876543210', 'customer']);
 
-    await new Promise((resolve, reject) => {
-      db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-        ['Jane Smith', 'jane@example.com', hashedPassword, '5551234567', 'customer'],
-        function(err) {
-          if (err) reject(err);
-          else resolve();
-        });
-    });
+    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+      ['Jane Smith', 'jane@example.com', hashedPassword, '5551234567', 'customer']);
 
     // Insert products
     for (const product of products) {
-      await new Promise((resolve, reject) => {
-        db.run('INSERT OR IGNORE INTO products (name, brand, description, price, stock, specifications, is_featured, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-          [
-            product.name,
-            product.brand,
-            product.description,
-            product.price,
-            product.stock,
-            JSON.stringify(product.specifications),
-            product.is_featured ? 1 : 0,
-            JSON.stringify(product.images)
-          ],
-          function(err) {
-            if (err) reject(err);
-            else resolve();
-          });
-      });
+      await db.run('INSERT OR IGNORE INTO products (name, brand, description, price, stock, specifications, is_featured, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          product.name,
+          product.brand,
+          product.description,
+          product.price,
+          product.stock,
+          JSON.stringify(product.specifications),
+          product.is_featured ? 1 : 0,
+          JSON.stringify(product.images)
+        ]);
     }
 
-    // Get admin user id
-    const adminRow = await new Promise((resolve, reject) => {
-      db.get('SELECT id FROM users WHERE email = ?', ['admin@technow.com'], (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
-    const adminId = adminRow?.id;
+    // Get the first product's ID and admin's ID
+    const firstProduct = await db.query('SELECT id FROM products LIMIT 1');
+    const admin = await db.query('SELECT id FROM users WHERE role = ? LIMIT 1', ['admin']);
 
-    // Get first product id
-    const firstProductRow = await new Promise((resolve, reject) => {
-      db.get('SELECT id FROM products LIMIT 1', (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
+    if (firstProduct.length > 0 && admin.length > 0) {
+      // Insert a sample review
+      await db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
+        [firstProduct[0].id, admin[0].id, 5, 'Excellent phone, highly recommend!']);
 
-    if (firstProductRow) {
-      await new Promise((resolve, reject) => {
-        db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
-          [firstProductRow.id, adminId, 5, 'Amazing phone! Incredible camera quality.'],
-          function(err) {
-            if (err) reject(err);
-            else resolve();
-          });
-      });
-
-      await new Promise((resolve, reject) => {
-        db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
-          [firstProductRow.id, adminId, 4, 'Great performance and build quality.'],
-          function(err) {
-            if (err) reject(err);
-            else resolve();
-          });
-      });
+      await db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
+        [firstProduct[0].id, admin[0].id, 4, 'Great performance and build quality.']);
     }
 
     console.log('Database seeded successfully!');
-    db.close();
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);
-    db.close();
     process.exit(1);
   }
 };
