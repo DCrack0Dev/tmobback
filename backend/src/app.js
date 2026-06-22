@@ -22,8 +22,41 @@ import { generalLimiter } from './middleware/rateLimiter.js';
 dotenv.config();
 
 const app = express();
+const debugServerUrl = 'http://127.0.0.1:7777/event';
+const debugSessionId = 'products-load-failure';
+const sendDebugEvent = (hypothesisId, location, msg, data = {}) => {
+  // #region debug-point B:backend-cors
+  fetch(debugServerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: debugSessionId,
+      runId: 'pre-fix',
+      hypothesisId,
+      location,
+      msg: `[DEBUG] ${msg}`,
+      data,
+      ts: Date.now()
+    })
+  }).catch(() => {});
+  // #endregion
+};
 
 app.use(helmet());
+app.use((req, res, next) => {
+  // #region debug-point B:backend-request-origin
+  if (req.path.startsWith('/api/products')) {
+    sendDebugEvent('B', 'backend/src/app.js:cors-probe', 'incoming products request', {
+      path: req.path,
+      method: req.method,
+      origin: req.headers.origin || null,
+      storefrontUrl: process.env.STOREFRONT_URL || null,
+      adminUrl: process.env.ADMIN_URL || null
+    });
+  }
+  // #endregion
+  next();
+});
 app.use(cors({
   origin: [process.env.STOREFRONT_URL, process.env.ADMIN_URL],
   credentials: true

@@ -6,10 +6,15 @@ dotenv.config();
 let query, run, db;
 
 let pool;
-if (process.env.DATABASE_URL) {
+const databaseUrl =
+  process.env.DATABASE_URL ||
+  process.env.MYSQL_PUBLIC_URL ||
+  process.env.MYSQL_URL;
+
+if (databaseUrl) {
   // Using full connection URL
   pool = mysql.createPool({
-    uri: process.env.DATABASE_URL,
+    uri: databaseUrl,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

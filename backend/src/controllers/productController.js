@@ -2,10 +2,51 @@ import db from '../config/db.js';
 import cloudinary from '../config/cloudinary.js';
 import { validationResult } from 'express-validator';
 
+const debugServerUrl = 'http://127.0.0.1:7777/event';
+const debugSessionId = 'products-load-failure';
+const sendDebugEvent = (hypothesisId, location, msg, data = {}) => {
+  // #region debug-point C:backend-products
+  fetch(debugServerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId: debugSessionId,
+      runId: 'pre-fix',
+      hypothesisId,
+      location,
+      msg: `[DEBUG] ${msg}`,
+      data,
+      ts: Date.now()
+    })
+  }).catch(() => {});
+  // #endregion
+};
+
+const parseJsonField = (value, fallback) => {
+  if (!value) {
+    return fallback;
+  }
+
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
 export const getProducts = async (req, res) => {
   try {
     const { search, brand, minPrice, maxPrice, sort = 'newest', page = 1, limit = 20, is_featured } = req.query;
     const offset = (page - 1) * limit;
+    // #region debug-point C:get-products-entry
+    sendDebugEvent('C', 'backend/src/controllers/productController.js:getProducts:start', 'getProducts start', {
+      query: req.query
+    });
+    // #endregion
 
     let query = `
       SELECT p.*, 
@@ -80,13 +121,19 @@ export const getProducts = async (req, res) => {
       countParams.push(is_featured === 'true' ? 1 : 0);
     }
     const countResult = await db.query(countQuery, countParams);
+    // #region debug-point D:get-products-success
+    sendDebugEvent('D', 'backend/src/controllers/productController.js:getProducts:success', 'getProducts success', {
+      rowCount: products.length,
+      total: countResult[0]?.total ?? null,
+      sampleKeys: products[0] ? Object.keys(products[0]) : []
+    });
+    // #endregion
 
-    // TEMP: Return raw data without JSON parsing
     res.json({
       products: products.map(p => ({
         ...p,
-        images: [], // Hardcoded empty for now
-        specifications: {}, // Hardcoded empty for now
+        images: parseJsonField(p.images, []),
+        specifications: parseJsonField(p.specifications, {}),
         average_rating: parseFloat(p.average_rating) || 0,
         review_count: parseInt(p.review_count) || 0
       })),
@@ -95,6 +142,13 @@ export const getProducts = async (req, res) => {
       limit: parseInt(limit)
     });
   } catch (error) {
+    // #region debug-point C:get-products-error
+    sendDebugEvent('C', 'backend/src/controllers/productController.js:getProducts:error', 'getProducts error', {
+      message: error.message,
+      code: error.code || null,
+      stack: error.stack
+    });
+    // #endregion
     console.error('Get products error:', error);
     res.status(500).json({ 
       error: 'Internal server error',
@@ -122,11 +176,10 @@ export const getProduct = async (req, res) => {
     }
 
     const product = products[0];
-    // TEMP: Return raw data without JSON parsing
     res.json({
       ...product,
-      images: [], // Hardcoded empty for now
-      specifications: {}, // Hardcoded empty for now
+      images: parseJsonField(product.images, []),
+      specifications: parseJsonField(product.specifications, {}),
       average_rating: parseFloat(product.average_rating) || 0,
       review_count: parseInt(product.review_count) || 0
     });

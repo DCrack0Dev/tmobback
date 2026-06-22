@@ -1110,48 +1110,119 @@ const products = [
   }
 ];
 
+const ensureUser = async ({ name, email, password, phone, role }) => {
+  const existingUser = await db.query('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
+
+  if (existingUser.length > 0) {
+    return existingUser[0].id;
+  }
+
+  const result = await db.run(
+    'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+    [name, email, password, phone, role]
+  );
+
+  return result.lastID;
+};
+
+const upsertProduct = async (product) => {
+  const existingProduct = await db.query('SELECT id FROM products WHERE name = ? LIMIT 1', [product.name]);
+  const payload = [
+    product.brand,
+    product.description,
+    product.price,
+    product.stock,
+    JSON.stringify(product.specifications),
+    product.is_featured ? 1 : 0,
+    JSON.stringify(product.images)
+  ];
+
+  if (existingProduct.length > 0) {
+    await db.run(
+      'UPDATE products SET brand = ?, description = ?, price = ?, stock = ?, specifications = ?, is_featured = ?, images = ? WHERE id = ?',
+      [...payload, existingProduct[0].id]
+    );
+    return existingProduct[0].id;
+  }
+
+  const result = await db.run(
+    'INSERT INTO products (name, brand, description, price, stock, specifications, is_featured, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [product.name, ...payload]
+  );
+
+  return result.lastID;
+};
+
+const ensureReview = async ({ productId, userId, rating, comment }) => {
+  const existingReview = await db.query(
+    'SELECT id FROM reviews WHERE product_id = ? AND user_id = ? AND comment = ? LIMIT 1',
+    [productId, userId, comment]
+  );
+
+  if (existingReview.length > 0) {
+    return existingReview[0].id;
+  }
+
+  const result = await db.run(
+    'INSERT INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
+    [productId, userId, rating, comment]
+  );
+
+  return result.lastID;
+};
+
 const seedDatabase = async () => {
   try {
     console.log('Seeding database...');
 
     const hashedPassword = await bcrypt.hash('password123', 10);
 
-    // Insert admin and customers using our db.run
-    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-      ['Admin User', 'admin@technow.com', hashedPassword, '1234567890', 'admin']);
+    const adminId = await ensureUser({
+      name: 'Admin User',
+      email: 'admin@technow.com',
+      password: hashedPassword,
+      phone: '1234567890',
+      role: 'admin'
+    });
 
-    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-      ['John Doe', 'john@example.com', hashedPassword, '9876543210', 'customer']);
+    await ensureUser({
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: hashedPassword,
+      phone: '9876543210',
+      role: 'customer'
+    });
 
-    await db.run('INSERT OR IGNORE INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-      ['Jane Smith', 'jane@example.com', hashedPassword, '5551234567', 'customer']);
+    await ensureUser({
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      password: hashedPassword,
+      phone: '5551234567',
+      role: 'customer'
+    });
 
-    // Insert products
+    let firstProductId = null;
     for (const product of products) {
-      await db.run('INSERT OR IGNORE INTO products (name, brand, description, price, stock, specifications, is_featured, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          product.name,
-          product.brand,
-          product.description,
-          product.price,
-          product.stock,
-          JSON.stringify(product.specifications),
-          product.is_featured ? 1 : 0,
-          JSON.stringify(product.images)
-        ]);
+      const productId = await upsertProduct(product);
+      if (!firstProductId) {
+        firstProductId = productId;
+      }
     }
 
-    // Get the first product's ID and admin's ID
-    const firstProduct = await db.query('SELECT id FROM products LIMIT 1');
-    const admin = await db.query('SELECT id FROM users WHERE role = ? LIMIT 1', ['admin']);
+    if (firstProductId && adminId) {
+      await ensureReview({
+        productId: firstProductId,
+        userId: adminId,
+        rating: 5,
+        comment: 'Excellent phone, highly recommend!'
+      });
 
-    if (firstProduct.length > 0 && admin.length > 0) {
-      // Insert a sample review
-      await db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
-        [firstProduct[0].id, admin[0].id, 5, 'Excellent phone, highly recommend!']);
-
-      await db.run('INSERT OR IGNORE INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
-        [firstProduct[0].id, admin[0].id, 4, 'Great performance and build quality.']);
+      await ensureReview({
+        productId: firstProductId,
+        userId: adminId,
+        rating: 4,
+        comment: 'Great performance and build quality.'
+      });
     }
 
     console.log('Database seeded successfully!');

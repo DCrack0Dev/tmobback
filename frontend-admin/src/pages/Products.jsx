@@ -5,12 +5,20 @@ import api from '../services/api';
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadProducts = async () => {
-      const response = await api.get('/products');
-      setProducts(response.data.products);
-      setLoading(false);
+      try {
+        setError('');
+        const response = await api.get('/products');
+        setProducts(Array.isArray(response.data.products) ? response.data.products : []);
+      } catch (err) {
+        console.error('Error loading admin products:', err);
+        setError('Failed to load products.');
+      } finally {
+        setLoading(false);
+      }
     };
     loadProducts();
   }, []);
@@ -24,6 +32,10 @@ const Products = () => {
 
   if (loading) {
     return <div className="text-center py-12">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-12 text-red-600">{error}</div>;
   }
 
   return (
@@ -66,7 +78,7 @@ const Products = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">{product.brand}</td>
-                <td className="px-6 py-4">${product.price.toFixed(2)}</td>
+                <td className="px-6 py-4">${Number(product.price || 0).toFixed(2)}</td>
                 <td className="px-6 py-4">{product.stock}</td>
                 <td className="px-6 py-4">
                   {product.is_featured ? (
