@@ -7,85 +7,86 @@ import bcrypt from 'bcrypt';
 
 export const createOrder = async (req, res) => {
   try {
-    await db.run('BEGIN TRANSACTION');
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      await db.run('ROLLBACK');
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { items, shipping_address, guest_name, guest_email, guest_phone, create_account, password } = req.body;
     const userId = req.user?.id || null;
 
-    let finalUserId = userId;
-    if (create_account && !userId && password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const userResult = await db.run(
-        'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-        [guest_name, guest_email, hashedPassword, guest_phone, 'customer']
-      );
-      finalUserId = userResult.lastID;
-    }
-
-    let totalAmount = 0;
-    const orderItems = [];
-
-    for (const item of items) {
-      const products = await db.query('SELECT * FROM products WHERE id = ?', [item.product_id]);
-      if (products.length === 0) {
-        await db.run('ROLLBACK');
-        return res.status(400).json({ error: `Product ${item.product_id} not found` });
+    const orderResult = await db.transaction(async (tx) => {
+      let finalUserId = userId;
+      if (create_account && !userId && password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userResult = await tx.run(
+          'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+          [guest_name, guest_email, hashedPassword, guest_phone, 'customer']
+        );
+        finalUserId = userResult.lastID;
       }
-      const product = products[0];
-      if (product.stock < item.quantity) {
-        await db.run('ROLLBACK');
-        return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
+
+      let totalAmount = 0;
+      const orderItems = [];
+
+      for (const item of items) {
+        const products = await tx.query('SELECT * FROM products WHERE id = ?', [item.product_id]);
+        if (products.length === 0) {
+          throw new Error(`Product ${item.product_id} not found`);
+        }
+        const product = products[0];
+        if (product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for ${product.name}`);
+        }
+        totalAmount += product.price * item.quantity;
+        orderItems.push({ ...item, price: product.price });
+
+        await tx.run('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.product_id]);
       }
-      totalAmount += product.price * item.quantity;
-      orderItems.push({ ...item, price: product.price });
 
-      await db.run('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.product_id]);
-    }
+      const rates = getCachedRates();
+      const cryptoAmount = totalAmount / rates.usdtToUsd;
 
-    const rates = getCachedRates();
-    const cryptoAmount = totalAmount / rates.usdtToUsd;
-
-    const orderResult = await db.run(
-      'INSERT INTO orders (user_id, guest_name, guest_email, guest_phone, total_amount, crypto_amount, exchange_rate_used, wallet_address, shipping_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        finalUserId,
-        guest_name,
-        guest_email,
-        guest_phone,
-        totalAmount,
-        cryptoAmount,
-        rates.usdtToUsd,
-        process.env.USDT_WALLET_ADDRESS,
-        JSON.stringify(shipping_address)
-      ]
-    );
-
-    const orderId = orderResult.lastID;
-
-    for (const item of orderItems) {
-      await db.run(
-        'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
-        [orderId, item.product_id, item.quantity, item.price]
+      const orderInsertResult = await tx.run(
+        'INSERT INTO orders (user_id, guest_name, guest_email, guest_phone, total_amount, crypto_amount, exchange_rate_used, wallet_address, shipping_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          finalUserId,
+          guest_name,
+          guest_email,
+          guest_phone,
+          totalAmount,
+          cryptoAmount,
+          rates.usdtToUsd,
+          process.env.USDT_WALLET_ADDRESS,
+          JSON.stringify(shipping_address)
+        ]
       );
-    }
 
-    if (finalUserId) {
-      await db.run('DELETE FROM carts WHERE user_id = ?', [finalUserId]);
-    }
+      const orderId = orderInsertResult.lastID;
 
-    await db.run('COMMIT');
+      for (const item of orderItems) {
+        await tx.run(
+          'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
+          [orderId, item.product_id, item.quantity, item.price]
+        );
+      }
+
+      if (finalUserId) {
+        await tx.run('DELETE FROM carts WHERE user_id = ?', [finalUserId]);
+      }
+
+      return { orderId, finalUserId };
+    });
 
     const qrCode = await generateQRCodeDataUrl(process.env.USDT_WALLET_ADDRESS);
 
-    const order = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+    const order = await db.query('SELECT * FROM orders WHERE id = ?', [orderResult.orderId]);
 
-    await sendOrderConfirmation(order[0]);
+    try {
+      await sendOrderConfirmation(order[0]);
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError);
+    }
 
     res.status(201).json({
       ...order[0],
@@ -93,9 +94,8 @@ export const createOrder = async (req, res) => {
       qr_code: qrCode
     });
   } catch (error) {
-    await db.run('ROLLBACK');
     console.error('Create order error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 };
 

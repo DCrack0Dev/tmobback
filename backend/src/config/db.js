@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-let query, run, db;
-
 let pool;
 const databaseUrl =
   process.env.DATABASE_URL ||
@@ -46,19 +44,41 @@ if (databaseUrl) {
   throw new Error('Please configure MySQL database connection (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME)');
 }
 
-// Define functions for either case
-query = async (sql, params = []) => {
-  console.log('Executing query:', sql, 'with params:', params);
-  const [rows] = await pool.query(sql, params);
-  return rows;
+// Helper to create query/run functions for a specific connection
+const createConnectionMethods = (conn) => ({
+  query: async (sql, params = []) => {
+    console.log('Executing query:', sql, 'with params:', params);
+    const [rows] = await conn.query(sql, params);
+    return rows;
+  },
+  run: async (sql, params = []) => {
+    console.log('Executing run:', sql, 'with params:', params);
+    const [result] = await conn.query(sql, params);
+    return { lastID: result.insertId, changes: result.affectedRows };
+  }
+});
+
+// Default pool-based functions
+const poolMethods = createConnectionMethods(pool);
+
+// Transaction support
+const transaction = async (callback) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await callback(createConnectionMethods(conn));
+    await conn.commit();
+    return result;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 };
 
-run = async (sql, params = []) => {
-  console.log('Executing run:', sql, 'with params:', params);
-  const [result] = await pool.query(sql, params);
-  return { lastID: result.insertId, changes: result.affectedRows };
+export default { 
+  ...poolMethods, 
+  pool,
+  transaction 
 };
-
-db = pool;
-
-export default { query, run, db };
